@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Html5 Canvas Animations</title>
+</head>
+
+<body onLoad="init()">
+    <canvas id="canvas" width="1200" height="960">
+ </canvas>
+    <script>
+        function f(n) {
+            //大于数组长度时，取数组长度
+            if (n > 31) n = 31;
+            var number = [];
+            while (n) {
+                //随机数的选取方法31为所需的数组长度
+                var num = Math.floor(Math.random() * 31) + 2;
+                //数组查重的方法
+                if (number.indexOf(num) < 0) {
+                    number.push(num);
+                    n--;
+                }
+            }
+            console.log(number.sort()); //用于观察数组
+            console.log(number)
+        }
+        f(32) //只能取到数组长度的数组
+    </script>
+</body>
+
+</html>

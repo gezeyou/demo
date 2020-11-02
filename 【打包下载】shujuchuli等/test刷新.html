@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>刷新多标签</title>
+    <style>
+        #main {
+            position: relative;
+        }
+        
+        canvas {
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main"></div>
+    <script src="../js/jquery.min.js"></script>
+    <script>
+        var width = 822;
+        var height = 600;
+        var baseIndex = 10;
+        var upIndex = 20;
+        var midIndex = 15;
+        var girdNum = 74.73; //822/11
+        var locArray = [{
+            x: 0.241,
+            y: 1.544,
+            ip: '192.168.100.51'
+        }, {
+            x: 0.651,
+            y: 7.29,
+            ip: '192.168.100.52'
+        }, {
+            x: 6.438,
+            y: 0.339,
+            ip: '192.168.100.53'
+        }, {
+            x: 6.337,
+            y: 6.87,
+            ip: '192.168.100.54'
+        }];
+        var arc = 15;
+        var message = [{
+            "distance": 270,
+            "distance16": "010e",
+            "tagip": "192.168.100.52",
+            "id": 3343,
+            "flag": "cc"
+        }, {
+            "distance": 711,
+            "distance16": "02c7",
+            "tagip": "192.168.100.53",
+            "id": 3343,
+            "flag": "cc"
+        }, {
+            "distance": 351,
+            "distance16": "015f",
+            "tagip": "192.168.100.51",
+            "id": 3343,
+            "flag": "cc"
+        }, {
+            "distance": 608,
+            "distance16": "0260",
+            "tagip": "192.168.100.54",
+            "id": 3343,
+            "flag": "cc"
+        }];
+        $(document).ready(function() {
+            var canvasList = document.getElementById('main');
+            var canvasInbase = document.createElement('canvas');
+            var canvasInmiddle = document.createElement('canvas');
+            var canvasInup = document.createElement('canvas');
+            var imgObj = new Image();
+            imgObj.src = "../image/1234.jpg";
+            canvasList.appendChild(canvasInbase);
+            canvasList.appendChild(canvasInup);
+            canvasList.appendChild(canvasInmiddle);
+            canvasInmiddle.width = width;
+            canvasInmiddle.height = height;
+            canvasInmiddle.style.zIndex = midIndex;
+            canvasInbase.width = width; //☜
+            canvasInbase.height = height;
+            canvasInup.style.zIndex = upIndex;
+            //console.log(canvasInbase.style);
+            canvasInbase.style.zIndex = baseIndex;
+            canvasInup.width = width; //☜
+            canvasInup.height = height;
+            //console.log(canvasInup.style);
+            canvasInup.style.zIndex = upIndex;
+            //canvasInup.style.backgroundColor = '#FF0000';
+            var context = canvasInbase.getContext("2d");
+            var cxt = canvasInup.getContext("2d");
+            var midcxt = canvasInmiddle.getContext("2d");
+            createBack();
+            createLo();
+
+            // setTimeout(() => {
+            //     getData();
+            // }, speed);
+
+
+            // const getData = () => {
+            //     cxt.clearRect(0, 0, width, height);
+            //     //for循环输出30个标签
+            //     for (let i = 0; i < 30; i++) {
+            //         cxt.fillStyle = "#ff1a1a";
+            //         cxt.beginPath();
+            //         cxt.arc(X1 + i * A, Y1 + i * A, arc, 0, 2 * Math.PI);
+            //         cxt.closePath();
+            //         cxt.fill(); 
+            //     }
+            //     X1 = X1 + 15;
+            //     Y1 = Y1 + 15;
+            //     //间隔300ms
+            //     console.log('输出i');
+            //     setTimeout(() => {
+            //         getData();
+            //     }, speed);
+            // }
+            function createLo() {
+
+                locArray.forEach(function(element) {
+                    for (var j = 0; j <= 3; j++) {
+                        if (message[j].tagip == element.ip) {
+                            console.log('这是里层循环第' + j + '次');
+                        }
+
+                    }
+                    midcxt.fillStyle = "#ff1a1a";
+                    midcxt.beginPath();
+                    midcxt.arc(element.x * girdNum, element.y * girdNum, arc, 0, 2 * Math.PI);
+                    midcxt.closePath();
+                    midcxt.fill();
+                    midcxt.font = '30px "微软雅黑"';       //设置字体      
+                    midcxt.textBaseline = "bottom";       //设置字体底线对齐绘制基线
+                    midcxt.textAlign = "left";          //设置字体对齐的方式              
+                    midcxt.fillText(element.ip, element.x * girdNum, element.y * girdNum);  
+                    console.log(element.ip)   //填充文字
+                })
+
+            }
+
+            function createBack() {
+                let imgg = new Image();
+                imgg.src = "../image/1234.jpg";
+                imgg.onload = function() {
+                    context.drawImage(imgg, 0, 0, width, height);
+                }
+
+            }
+        })
+    </script>
+</body>
+
+</html>

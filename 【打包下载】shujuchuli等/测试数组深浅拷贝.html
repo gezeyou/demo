@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        var dataArray = [
+            [{
+                x: 1,
+                y: 1,
+                id: 1,
+                flag: 12
+            }, {
+                x: 2,
+                y: 3,
+                id: 1
+            }, {
+                x: 4,
+                y: 5,
+                id: 1
+            }],
+            [{
+                x: 1,
+                y: 1,
+                id: 2
+            }, {
+                x: 2,
+                y: 3,
+                id: 2
+            }, {
+                x: 4,
+                y: 5,
+                id: 2
+            }],
+            [{
+                x: 1,
+                y: 1,
+                id: 3
+            }, {
+                x: 2,
+                y: 3,
+                id: 3
+            }, {
+                x: 4,
+                y: 5,
+                id: 3
+            }]
+        ];
+        var charu = {
+            x: 1,
+            y: 2,
+            id: 1,
+            flag: 21
+        }
+        var idArray = [];
+        is();
+        is();
+
+        function is() {
+            //先遍历提取id作为数组用于匹配
+            //如果匹配数组有元素后，检测是否存在当前的id
+            //存在的话，对应的data数组推入
+            //不存在则推入data，作为新的数组元素，并且更新
+            if (idArray.length > 0) {
+                console.log(1);
+                const idflag = idArray.indexOf(charu.id);
+                if (idflag < 0) {
+                    dataArray.push(JSON.parse(JSON.stringify([charu])));
+                    idArray.push(charu.id);
+                } else {
+                    //判断当前flag是否一致
+                    if (dataArray[idflag][0].flag !== charu.flag) {
+                        dataArray[idflag] = JSON.parse(JSON.stringify([]));
+                    }
+                    dataArray[idflag].push(JSON.parse(JSON.stringify([charu])));
+                }
+
+            } else {
+                dataArray.forEach((element) => {
+                    if (element.length > 0) {
+                        idArray.push(element[0].id);
+                    }
+                })
+            }
+            console.log(dataArray);
+            console.log(idArray);
+        }
+    </script>
+</body>
+
+</html>

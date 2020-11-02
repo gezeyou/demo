@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>demo四基站</title>
+</head>
+
+<body>
+    <div class="father">
+        <canvas id="canvas" width="822" height="600"></canvas>
+        <canvas id="location" width="822" height="600"></canvas>
+    </div>
+</body>
+<script src="../js/jquery.min.js"></script>
+<script>
+    // $(document).ready(function() {})
+
+    function draw() {
+        if (x > 960) {
+            x = 10;
+            ctx.beginPath();
+        }
+        ctx.clearRect(0, 0, 980, 800);
+        ctx.lineWidth = "2";
+        ctx.lineJoin = "round";
+        ctx.strokeStyle = '#e0c';
+
+        for (var i = 0; i < 100; i += 10) {
+            ctx.moveTo(x - dx, 50 * Math.sin(Math.PI * (x - dx) / 90) + 200 + i * 3);
+            ctx.lineTo(x, 50 * Math.sin(Math.PI * x / 90) + 200 + i * 3);
+            ctx.stroke();
+        }
+        x += dx;
+    }
+    //绘制轨迹部分
+    function drawCurvePath(start, point, end, percent) {
+        ctx.beginPath(); //开始画线
+        ctx.moveTo(start[0], start[1]); //画笔移动到起点
+        for (var t = 0; t <= percent / 100; t += 0.005) {
+            //获取每个时间点的坐标
+            var x = quadraticBezier(start[0], point[0], end[0], t);
+            var y = quadraticBezier(start[1], point[1], end[1], t);
+            ctx.lineTo(x, y); //画出上个时间点到当前时间点的直线
+        }
+        ctx.stroke(); //描边
+    }
+
+    function f1() {
+        var sum = 0;
+        var obj = {
+            inc: function() {
+                sum++;
+                return sum;
+            }
+        };
+        return obj;
+        console.log(sum);
+    }
+    let result = f1();
+    console.log(result.inc()); //1
+
+    console.log(result.inc()); //2
+    console.log(result.inc()); //3
+</script>
+
+</html>

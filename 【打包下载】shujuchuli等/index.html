@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>四基站</title>
+    <style>
+        #mainArea {
+            position: relative;
+        }
+        
+        canvas {
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="mainArea"></div>
+    <script src="../js/jquery.min.js"></script>
+    <script>
+        var width = 764;
+        var height = 600;
+        //w9.81h7.7
+        var girdNum = 77.92; //600/7.7
+        var baseIndex = 10;
+        var midIndex = 15;
+        var upIndex = 20;
+        const correct = 20; //修正值20cm
+        const tagid = 2615; //标签id
+        var locArray = [{
+            x: 0.241,
+            y: 1.544,
+            ip: '192.168.100.51',
+            correct: 20
+        }, {
+            x: 0.651,
+            y: 7.29,
+            ip: '192.168.100.52',
+            correct: 10
+        }, {
+            x: 6.466,
+            y: 0.441,
+            ip: '192.168.100.53',
+            correct: 19
+        }, {
+            x: 6.384,
+            y: 7.530,
+            ip: '192.168.100.54',
+            correct: 40
+        }];
+        var arc = 15;
+        $(document).ready(function() {
+            var canvasList = document.getElementById('mainArea');
+            var canvasInbase = document.createElement('canvas');
+            var canvasInmiddle = document.createElement('canvas');
+            var canvasInup = document.createElement('canvas');
+            var imgObj = new Image();
+            imgObj.src = "../image/1234.jpg";
+            canvasList.appendChild(canvasInbase);
+            canvasList.appendChild(canvasInup);
+            canvasList.appendChild(canvasInmiddle);
+            canvasInmiddle.width = width;
+            canvasInmiddle.height = height;
+            canvasInmiddle.style.zIndex = midIndex;
+            var midcxt = canvasInmiddle.getContext("2d");
+            canvasInbase.width = width; //☜
+            canvasInbase.height = height;
+            //console.log(canvasInbase.style);
+            canvasInbase.style.zIndex = baseIndex;
+            canvasInup.width = width; //☜
+            canvasInup.height = height;
+            //console.log(canvasInup.style);
+            canvasInup.style.zIndex = upIndex;
+            //canvasInup.style.backgroundColor = '#FF0000';
+            var context = canvasInbase.getContext("2d");
+            createBack();
+            createLo();
+            var cxt = canvasInup.getContext("2d");
+
+            function createBack() {
+                let imgg = new Image();
+                imgg.src = "../image/234.jpg";
+                imgg.onload = function() {
+                    context.drawImage(imgg, 0, 0, width, height);
+                }
+
+            }
+
+            function createLo() {
+
+                locArray.forEach(function(element) {
+                    midcxt.fillStyle = "#ff1a1a";
+                    midcxt.beginPath();
+                    midcxt.arc(element.x * girdNum, element.y * girdNum, arc, 0, 2 * Math.PI);
+                    midcxt.closePath();
+                    midcxt.fill();
+                    // midcxt.font = '30px "微软雅黑"';       //设置字体      
+                    // midcxt.textBaseline = "bottom";       //设置字体底线对齐绘制基线
+                    // midcxt.textAlign = "left";          //设置字体对齐的方式              
+                    // midcxt.fillText(element.ip, element.x * girdNum, element.y * girdNum);  
+                    // console.log(element.ip)   //填充文字
+                })
+
+            }
+
+            if (window.WebSocket) {
+                var ws = new WebSocket('ws://127.0.0.1:3001');
+
+                ws.onopen = function(e) {
+                    console.log("连接服务器成功");
+                    ws.send("game1");
+                }
+                ws.onclose = function(e) {
+                    console.log("服务器关闭");
+                }
+                ws.onerror = function() {
+                    console.log("连接出错");
+                }
+
+                ws.onmessage = function(e) {
+
+                    const edata = JSON.parse(e.data);
+                    console.log(edata);
+                    if (edata[0].id) {
+                        cxt.clearRect(0, 0, width, height); //cxt.fillStyle = "#ff1a1a";
+                        cxt.globalAlpha = 0.6;
+
+                        edata.forEach(function(element) {
+                            for (var j = 0; j <= 3; j++) {
+                                if (locArray[j].ip == element.tagip) {
+                                    cxt.beginPath();
+                                    const arcDistance = (element.distance - locArray[j].correct) * girdNum / 100;
+                                    cxt.arc(locArray[j].x * girdNum, locArray[j].y * girdNum, arcDistance, 0, 2 * Math.PI);
+                                    cxt.lineWidth = 3;
+                                    cxt.strokeStyle = "green";
+                                    cxt.stroke(); //画空心圆
+                                    cxt.closePath();
+                                    cxt.font = '30px "微软雅黑"';       //设置字体      
+                                    cxt.textBaseline = "bottom";       //设置字体底线对齐绘制基线
+                                    cxt.textAlign = "left";          //设置字体对齐的方式              
+                                    cxt.fillText(element.distance, locArray[j].x * girdNum + 5, locArray[j].y * girdNum + 20);  
+
+                                }
+                            }
+                            console.log('绘制一次');
+                            // if (element.tagip == '192.168.100.53') {
+                            //     const arcDistance = element.distance * girdNum / 100;
+                            //     cxt.arc(locArray[2].x * girdNum, locArray[2].y * girdNum, arcDistance, 0, 2 * Math.PI);
+                            //     cxt.closePath();
+                            //     cxt.fill();
+                            //     // cxt.font = '30px "微软雅黑"';       //设置字体      
+                            //     // cxt.textBaseline = "bottom";       //设置字体底线对齐绘制基线
+                            //     // cxt.textAlign = "left";          //设置字体对齐的方式              
+                            //     // cxt.fillText(element.ip, element.x * girdNum, element.y * girdNum);  
+                            //     // console.log(element.ip)   //填充文字
+                            // }
+                            // if (element.tagip == '192.168.100.54') {
+                            //     cxt.arc(locArray[3].x * girdNum, locArray[3].y * girdNum, element.distance * girdNum / 100, 0, 2 * Math.PI);
+                            //     cxt.closePath();
+                            //     cxt.fill();
+                            //     // cxt.font = '30px "微软雅黑"';       //设置字体      
+                            //     // cxt.textBaseline = "bottom";       //设置字体底线对齐绘制基线
+                            //     // cxt.textAlign = "left";          //设置字体对齐的方式              
+                            //     // cxt.fillText(element.ip, element.x * girdNum, element.y * girdNum);  
+                            //     // console.log(element.ip)   //填充文字
+                            // }
+
+                        })
+
+                    }
+                    // resdata = JSON.parse(edata);
+                    // console.log(resdata);
+
+                    // resdata.forEach(function(element) {
+                    //     if (typeof element.xlist !== 'string') {
+                    //         clearflag = true;
+                    //     }
+
+                    // })
+                    // if (clearflag) {
+                    //     cxt.clearRect(0, 0, canvasW, canvasH);
+                    // }
+                    // resdata.forEach(function(element) {
+                    //     if (typeof element.xlist !== 'string') {
+
+                    //         createImg(element);
+                    //         clearflag = false;
+                    //     }
+                    // })
+                }
+            }
+
+
+        });
+    </script>
+</body>
+
+</html>
